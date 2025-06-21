@@ -6,8 +6,12 @@ import {
   updateBlogPost,
   deleteBlogPost,
   getFeaturedPosts,
-  getTags
+  getTags,
+  uploadBlogPost,
+  getBlogPostBySlug
 } from '@/controllers/blogController';
+import { requireApiKey } from '@/middleware/auth';
+import upload from '@/middleware/upload';
 
 const router = Router();
 
@@ -20,11 +24,17 @@ router.get('/featured', getFeaturedPosts);
 // GET /api/v1/blog/tags - 取得所有標籤
 router.get('/tags', getTags);
 
-// GET /api/v1/blog/:id - 取得單篇文章
+// GET /api/v1/blog/post/:slug - 根據 slug 取得單篇文章
+router.get('/post/:slug', getBlogPostBySlug);
+
+// GET /api/v1/blog/:id - 取得單篇文章（根據 ID）
 router.get('/:id', getBlogPost);
 
 // POST /api/v1/blog - 建立新文章
 router.post('/', createBlogPost);
+
+// POST /api/v1/blog/upload - 上傳 Markdown 檔案（需要 API Key）
+router.post('/upload', requireApiKey, upload.single('file'), uploadBlogPost);
 
 // PUT /api/v1/blog/:id - 更新文章
 router.put('/:id', updateBlogPost);

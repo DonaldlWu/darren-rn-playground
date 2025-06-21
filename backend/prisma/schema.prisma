@@ -38,10 +38,13 @@ model BlogPost {
   title       String
   content     String   @db.Text
   excerpt     String
-  tags        String[] // PostgreSQL array
-  publishedAt DateTime @default(now())
+  tags        String[]
+  slug        String   @unique
+  status      String   @default("draft")
+  publishedAt DateTime?
   readTime    Int
   featured    Boolean  @default(false)
+  originalFileName String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

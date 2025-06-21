@@ -1,6 +1,8 @@
+import { Request } from 'express';
+
 // User related types
 export interface User {
-  id: string;
+  id: number;
   name: string;
   title: string;
   description: string;
@@ -8,6 +10,8 @@ export interface User {
   skills: string[];
   email: string;
   avatar?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Project related types
@@ -20,7 +24,9 @@ export interface Project {
   githubUrl?: string;
   liveUrl?: string;
   featured: boolean;
-  createdAt: Date;
+  createdAt: string;
+  updatedAt: string;
+  authorId: number;
 }
 
 // Blog related types
@@ -30,9 +36,15 @@ export interface BlogPost {
   content: string;
   excerpt: string;
   tags: string[];
-  publishedAt: Date;
+  slug: string;
+  status: string;
+  publishedAt?: string;
   readTime: number;
   featured: boolean;
+  originalFileName?: string;
+  createdAt: string;
+  updatedAt: string;
+  authorId: number;
 }
 
 // API Response types
@@ -55,4 +67,9 @@ export interface CreateUserRequest {
 
 export interface UpdateUserRequest extends Partial<CreateUserRequest> {
   id: string;
+}
+
+// 擴展 Express Request 類型以支援檔案上傳
+export interface UploadRequest extends Request {
+  file?: any; // 簡化類型定義
 } 

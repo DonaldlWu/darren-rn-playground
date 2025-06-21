@@ -2,6 +2,16 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+// 生成 slug 的函數
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
+
 async function main() {
   console.log('開始初始化資料庫...');
 
@@ -126,7 +136,8 @@ async function main() {
         tags: ['React', 'Rails', '技術轉型', '全端開發'],
         readTime: 8,
         featured: true,
-        authorId: user.id
+        authorId: user.id,
+        slug: generateSlug('從 Rails 到 React：我的技術轉型之路')
       },
     }),
     prisma.blogPost.upsert({
@@ -222,7 +233,8 @@ TypeScript 能夠大幅提升開發體驗和程式碼品質，值得在專案中
         tags: ['TypeScript', 'React', '最佳實踐', '前端開發'],
         readTime: 6,
         featured: false,
-        authorId: user.id
+        authorId: user.id,
+        slug: generateSlug('TypeScript 在 React 專案中的最佳實踐')
       },
     }),
   ]);

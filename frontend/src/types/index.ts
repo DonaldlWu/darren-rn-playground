@@ -39,9 +39,15 @@ export interface BlogPost {
   content: string;
   excerpt: string;
   tags: string[];
-  publishedAt: Date;
+  slug: string;
+  status: string;
+  publishedAt?: Date;
   readTime: number;
   featured: boolean;
+  originalFileName?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  authorId: number;
 }
 
 // Blog API Response types

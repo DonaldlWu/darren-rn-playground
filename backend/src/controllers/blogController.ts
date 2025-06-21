@@ -1,6 +1,11 @@
 import { Request, Response } from 'express';
-import { BlogPost } from '@/types';
+import { PrismaClient } from '@prisma/client';
+import { BlogPost, UploadRequest } from '@/types';
 import { sendSuccess, sendNotFound, sendBadRequest } from '@/utils/response';
+import { generateSlug } from '@/utils/slug';
+import { parseMarkdownFile, calculateReadTime, extractExcerpt } from '@/utils/markdown';
+
+const prisma = new PrismaClient();
 
 // Mock data - 之後可以替換為資料庫
 const mockBlogPosts: BlogPost[] = [
@@ -68,9 +73,14 @@ React 等前端框架提供了更流暢的用戶交互體驗。
     `,
     excerpt: '分享我從 Ruby on Rails 後端開發者轉型為 React 全端開發者的學習歷程和心得體會。',
     tags: ['React', 'TypeScript', 'Rails', '全端開發', '技術轉型'],
-    publishedAt: new Date('2024-01-15'),
+    publishedAt: '2024-01-15T00:00:00.000Z',
     readTime: 8,
-    featured: true
+    featured: true,
+    slug: 'rails-to-react-transition',
+    status: 'published',
+    createdAt: '2024-01-15T00:00:00.000Z',
+    updatedAt: '2024-01-15T00:00:00.000Z',
+    authorId: 1
   },
   {
     id: '2',
@@ -154,9 +164,14 @@ TypeScript 是一個強大的工具，正確使用能夠大幅提升開發效率
     `,
     excerpt: '分享在 React 專案中使用 TypeScript 的實用技巧和最佳實踐，幫助提升程式碼品質。',
     tags: ['TypeScript', 'React', '最佳實踐', '前端開發'],
-    publishedAt: new Date('2024-01-20'),
+    publishedAt: '2024-01-20T00:00:00.000Z',
     readTime: 6,
-    featured: false
+    featured: false,
+    slug: 'typescript-react-best-practices',
+    status: 'published',
+    createdAt: '2024-01-20T00:00:00.000Z',
+    updatedAt: '2024-01-20T00:00:00.000Z',
+    authorId: 1
   },
   {
     id: '3',
@@ -204,55 +219,20 @@ export default defineConfig({
 });
 \`\`\`
 
-### ESLint 配置
-\`\`\`json
-{
-  "extends": [
-    "eslint:recommended",
-    "@typescript-eslint/recommended",
-    "plugin:react/recommended"
-  ],
-  "rules": {
-    "react/react-in-jsx-scope": "off"
-  }
-}
-\`\`\`
-
-## 自動化流程
-
-### 1. 開發流程
-1. 程式碼編輯
-2. 自動格式化
-3. 程式碼檢查
-4. 自動測試
-
-### 2. 部署流程
-1. 程式碼提交
-2. CI/CD 觸發
-3. 自動測試
-4. 建置部署
-
-## 效能優化
-
-### 1. 建置優化
-- 程式碼分割
-- 樹搖優化
-- 快取策略
-
-### 2. 開發體驗
-- 熱重載
-- 快速建置
-- 錯誤提示
-
 ## 結語
 
-好的工具鏈配置能夠讓開發過程更加順暢，但也要注意不要過度配置，保持簡潔實用。
+好的工具鏈配置能夠大幅提升開發效率，關鍵在於選擇適合專案需求的工具組合。
     `,
     excerpt: '詳細介紹現代前端開發中常用的工具鏈配置，包括建置、測試、程式碼品質等各個方面。',
     tags: ['前端工具', 'Vite', 'ESLint', 'TypeScript', '開發效率'],
-    publishedAt: new Date('2024-01-25'),
+    publishedAt: '2024-01-25T00:00:00.000Z',
     readTime: 7,
-    featured: false
+    featured: false,
+    slug: 'modern-frontend-toolchain',
+    status: 'published',
+    createdAt: '2024-01-25T00:00:00.000Z',
+    updatedAt: '2024-01-25T00:00:00.000Z',
+    authorId: 1
   }
 ];
 
@@ -262,37 +242,56 @@ export const getAllBlogPosts = async (req: Request, res: Response): Promise<void
     const pageNum = parseInt(page as string, 10);
     const limitNum = parseInt(limit as string, 10);
     
-    let filteredPosts = [...mockBlogPosts];
+    // 從資料庫查詢文章
+    let whereClause: any = {
+      status: 'published'
+    };
     
     // 標籤篩選
     if (tag) {
-      filteredPosts = filteredPosts.filter(post => 
-        post.tags.some(t => t.toLowerCase().includes((tag as string).toLowerCase()))
-      );
+      whereClause.tags = {
+        has: tag as string
+      };
     }
     
     // 搜尋功能
     if (search) {
       const searchTerm = (search as string).toLowerCase();
-      filteredPosts = filteredPosts.filter(post =>
-        post.title.toLowerCase().includes(searchTerm) ||
-        post.excerpt.toLowerCase().includes(searchTerm) ||
-        post.tags.some(tag => tag.toLowerCase().includes(searchTerm))
-      );
+      whereClause.OR = [
+        { title: { contains: searchTerm, mode: 'insensitive' } },
+        { excerpt: { contains: searchTerm, mode: 'insensitive' } },
+        { content: { contains: searchTerm, mode: 'insensitive' } }
+      ];
     }
     
-    // 分頁
-    const startIndex = (pageNum - 1) * limitNum;
-    const endIndex = startIndex + limitNum;
-    const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+    // 查詢總數
+    const totalPosts = await prisma.blogPost.count({ where: whereClause });
+    
+    // 分頁查詢
+    const posts = await prisma.blogPost.findMany({
+      where: whereClause,
+      skip: (pageNum - 1) * limitNum,
+      take: limitNum,
+      orderBy: { publishedAt: 'desc' },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            title: true,
+            avatar: true
+          }
+        }
+      }
+    });
     
     const response = {
-      posts: paginatedPosts,
+      posts,
       pagination: {
         currentPage: pageNum,
-        totalPages: Math.ceil(filteredPosts.length / limitNum),
-        totalPosts: filteredPosts.length,
-        hasNext: endIndex < filteredPosts.length,
+        totalPages: Math.ceil(totalPosts / limitNum),
+        totalPosts,
+        hasNext: (pageNum * limitNum) < totalPosts,
         hasPrev: pageNum > 1
       }
     };
@@ -336,9 +335,14 @@ export const createBlogPost = async (req: Request, res: Response): Promise<void>
       content,
       excerpt,
       tags: tags || [],
-      publishedAt: new Date(),
+      publishedAt: new Date().toISOString(),
       readTime: Math.ceil(content.split(' ').length / 200), // 估算閱讀時間
-      featured: false
+      featured: false,
+      slug: generateSlug(title),
+      status: 'draft',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      authorId: 1
     };
     
     mockBlogPosts.push(newPost);
@@ -408,18 +412,130 @@ export const getFeaturedPosts = async (req: Request, res: Response): Promise<voi
 
 export const getTags = async (req: Request, res: Response): Promise<void> => {
   try {
+    // 從 mock 資料中提取所有標籤
     const allTags = mockBlogPosts.reduce((tags: string[], post) => {
-      post.tags.forEach(tag => {
-        if (!tags.includes(tag)) {
-          tags.push(tag);
-        }
-      });
-      return tags;
+      return [...tags, ...post.tags];
     }, []);
     
-    sendSuccess(res, allTags, 'Tags retrieved successfully');
+    // 去重並排序
+    const uniqueTags = [...new Set(allTags)].sort();
+    
+    sendSuccess(res, uniqueTags, 'Tags retrieved successfully');
   } catch (error) {
     console.error('Error fetching tags:', error);
     sendBadRequest(res, 'Failed to fetch tags');
+  }
+};
+
+/**
+ * 上傳 Markdown 檔案並創建部落格文章
+ */
+export const uploadBlogPost = async (req: UploadRequest, res: Response): Promise<void> => {
+  try {
+    const file = req.file;
+    
+    if (!file) {
+      sendBadRequest(res, 'No file uploaded');
+      return;
+    }
+
+    // 解析表單資料
+    const { title, excerpt, tags, featured, status } = req.body;
+    
+    // 解析 Markdown 檔案內容
+    const fileContent = file.buffer.toString();
+    const { frontMatter, content } = parseMarkdownFile(fileContent);
+    
+    console.log('Front matter:', frontMatter);
+    console.log('Tags from form:', tags);
+    console.log('Tags from front matter:', frontMatter.tags);
+    
+    // 合併 front matter 和表單資料
+    const finalTitle = title || frontMatter.title || 'Untitled';
+    const finalExcerpt = excerpt || frontMatter.excerpt || extractExcerpt(content);
+    
+    // 處理標籤：確保是陣列格式
+    let finalTags: string[] = [];
+    if (tags) {
+      finalTags = Array.isArray(tags) ? tags : tags.split(',').map((t: string) => t.trim());
+    } else if (frontMatter.tags) {
+      finalTags = Array.isArray(frontMatter.tags) ? frontMatter.tags : frontMatter.tags.split(',').map((t: string) => t.trim());
+    }
+    
+    console.log('Final tags:', finalTags);
+    
+    const finalFeatured = featured === 'true' || frontMatter.featured || false;
+    const finalStatus = status || frontMatter.status || 'draft';
+    
+    // 生成 slug
+    const slug = generateSlug(finalTitle);
+    
+    // 計算閱讀時間
+    const readTime = calculateReadTime(content);
+    
+    // 檢查 slug 是否已存在
+    const existingPost = await prisma.blogPost.findUnique({
+      where: { slug }
+    });
+    
+    if (existingPost) {
+      sendBadRequest(res, 'A post with this title already exists');
+      return;
+    }
+    
+    // 儲存到資料庫
+    const blogPost = await prisma.blogPost.create({
+      data: {
+        title: finalTitle,
+        content,
+        excerpt: finalExcerpt,
+        tags: finalTags,
+        slug,
+        status: finalStatus,
+        featured: finalFeatured,
+        readTime,
+        originalFileName: file.originalname,
+        authorId: 1, // 固定為你的 user id
+        publishedAt: finalStatus === 'published' ? new Date().toISOString() : null
+      }
+    });
+    
+    sendSuccess(res, blogPost, 'Blog post uploaded successfully');
+  } catch (error) {
+    console.error('Error uploading blog post:', error);
+    sendBadRequest(res, 'Failed to upload blog post');
+  }
+};
+
+/**
+ * 根據 slug 獲取部落格文章
+ */
+export const getBlogPostBySlug = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { slug } = req.params;
+    
+    const blogPost = await prisma.blogPost.findUnique({
+      where: { slug },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            title: true,
+            avatar: true
+          }
+        }
+      }
+    });
+    
+    if (!blogPost) {
+      sendNotFound(res, 'Blog post not found');
+      return;
+    }
+    
+    sendSuccess(res, blogPost, 'Blog post retrieved successfully');
+  } catch (error) {
+    console.error('Error fetching blog post:', error);
+    sendNotFound(res, 'Blog post not found');
   }
 }; 

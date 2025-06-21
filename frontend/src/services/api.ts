@@ -96,6 +96,11 @@ export const getBlogPost = async (id: string): Promise<BlogPost> => {
   return apiRequest<BlogPost>(`/blog/${id}`);
 };
 
+// 根據 slug 獲取部落格文章
+export const getBlogPostBySlug = async (slug: string): Promise<BlogPost> => {
+  return apiRequest<BlogPost>(`/blog/post/${slug}`);
+};
+
 export const getFeaturedBlogPosts = async (): Promise<BlogPost[]> => {
   return apiRequest<BlogPost[]>('/blog/featured');
 };

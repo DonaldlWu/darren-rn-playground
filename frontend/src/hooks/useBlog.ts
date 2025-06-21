@@ -3,6 +3,7 @@ import type { BlogPost, BlogListResponse, BlogQueryParams, CreateBlogPostRequest
 import { 
   getBlogPosts, 
   getBlogPost, 
+  getBlogPostBySlug,
   getFeaturedBlogPosts, 
   getBlogTags,
   createBlogPost,
@@ -29,6 +30,18 @@ export const useBlogPost = (id: string) => {
     {
       ready: !!id,
       cacheKey: `blog-post-${id}`,
+      staleTime: 10 * 60 * 1000, // 10分鐘快取
+    }
+  );
+};
+
+// 根據 slug 取得單篇部落格文章
+export const useBlogPostBySlug = (slug: string) => {
+  return useRequest(
+    () => getBlogPostBySlug(slug),
+    {
+      ready: !!slug,
+      cacheKey: `blog-post-slug-${slug}`,
       staleTime: 10 * 60 * 1000, // 10分鐘快取
     }
   );

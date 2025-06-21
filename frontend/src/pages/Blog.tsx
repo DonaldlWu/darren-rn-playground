@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Layout, Typography, Card, Row, Col, Input, Select, Pagination, Tag, Space, Button, Spin, Empty } from 'antd';
 import { SearchOutlined, BookOutlined, ClockCircleOutlined, TagOutlined } from '@ant-design/icons';
 import Header from '@/components/Header';
@@ -12,6 +13,7 @@ const { Search } = Input;
 const { Option } = Select;
 
 const Blog = () => {
+  const navigate = useNavigate();
   const [queryParams, setQueryParams] = useState<BlogQueryParams>({
     page: 1,
     limit: 6
@@ -145,7 +147,11 @@ const Blog = () => {
                       </div>
                     }
                     actions={[
-                      <Button type="link" key="read">
+                      <Button 
+                        type="link" 
+                        key="read"
+                        onClick={() => navigate(`/blog/post/${post.slug}`)}
+                      >
                         閱讀全文
                       </Button>
                     ]}
