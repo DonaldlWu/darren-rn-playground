@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 資料庫
+  postgres:
+    image: postgres:15-alpine
+    container_name: darren_portfolio_db
+    environment:
+      POSTGRES_DB: darren_portfolio
+      POSTGRES_USER: darren
+      POSTGRES_PASSWORD: password123
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - darren_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U darren -d darren_portfolio"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 後端 API 服務
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: darren_portfolio_backend
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://darren:password123@postgres:5432/darren_portfolio
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/prisma:/app/prisma
+      - ./backend/package.json:/app/package.json
+      - ./backend/tsconfig.json:/app/tsconfig.json
+      - ./backend/nodemon.json:/app/nodemon.json
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - darren_network
+    restart: unless-stopped
+    command: npm run dev
+
+  # 前端服務 (可選，用於生產環境)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: darren_portfolio_frontend
+    environment:
+      VITE_API_BASE_URL: http://localhost:3001/api/v1
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+    networks:
+      - darren_network
+    restart: unless-stopped
+    command: npx vite --host 0.0.0.0
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  darren_network:
+    driver: bridge 

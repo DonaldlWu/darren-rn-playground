@@ -1,6 +1,6 @@
 import type { User, Project, BlogPost, BlogListResponse, BlogQueryParams, CreateBlogPostRequest, UpdateBlogPostRequest } from '@/types';
 
-// 模擬API基礎URL
+// API基礎URL
 const API_BASE_URL = 'http://localhost:3001/api/v1';
 
 // 後端回應格式
@@ -59,20 +59,7 @@ const mockApiResponse = async <T>(data: T, delayMs: number = 1000): Promise<T> =
 
 // 使用者相關API
 export const getUserInfo = async (id: string): Promise<User> => {
-  // 模擬 API 延遲
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // Mock data
-  return {
-    id: '1',
-    name: 'Darren Wu',
-    title: 'Full Stack Developer',
-    description: 'Passionate full-stack developer with expertise in modern web technologies. From Rails to React, I love creating high-quality web applications and continuously learning new technologies.',
-    experience: 5,
-    skills: ['React', 'TypeScript', 'Node.js', 'Express', 'Ruby on Rails', 'PostgreSQL', 'MongoDB', 'Docker', 'AWS'],
-    email: 'darren@example.com',
-    avatar: 'https://via.placeholder.com/150'
-  };
+  return apiRequest<User>(`/users/${id}`);
 };
 
 export const updateUserInfo = async (id: string, data: Partial<User>): Promise<User> => {
@@ -84,31 +71,11 @@ export const updateUserInfo = async (id: string, data: Partial<User>): Promise<U
 
 // 專案相關API
 export const getProjects = async (): Promise<Project[]> => {
-  // Mock data
-  return [
-    {
-      id: '1',
-      title: '個人作品集網站',
-      description: '使用 React + TypeScript + Ant Design 建立的現代化個人作品集網站',
-      technologies: ['React', 'TypeScript', 'Ant Design', 'Vite'],
-      imageUrl: 'https://via.placeholder.com/300x200',
-      githubUrl: 'https://github.com/darren/portfolio',
-      liveUrl: 'https://darren-portfolio.com',
-      featured: true,
-      createdAt: new Date('2024-01-01')
-    },
-    {
-      id: '2',
-      title: '電商平台',
-      description: '全端電商平台，包含用戶管理、商品管理、訂單處理等功能',
-      technologies: ['React', 'Node.js', 'Express', 'MongoDB'],
-      imageUrl: 'https://via.placeholder.com/300x200',
-      githubUrl: 'https://github.com/darren/ecommerce',
-      liveUrl: 'https://ecommerce-demo.com',
-      featured: true,
-      createdAt: new Date('2023-12-01')
-    }
-  ];
+  return apiRequest<Project[]>('/projects');
+};
+
+export const getFeaturedProjects = async (): Promise<Project[]> => {
+  return apiRequest<Project[]>('/projects/featured');
 };
 
 // 部落格相關API

@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  name        String
+  title       String
+  description String
+  experience  Int
+  skills      String[] // PostgreSQL array
+  email       String   @unique
+  avatar      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 關聯
+  blogPosts BlogPost[]
+  projects  Project[]
+
+  @@map("users")
+}
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  excerpt     String
+  tags        String[] // PostgreSQL array
+  publishedAt DateTime @default(now())
+  readTime    Int
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 關聯
+  authorId Int
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@map("blog_posts")
+}
+
+model Project {
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  technologies String[] // PostgreSQL array
+  imageUrl     String?
+  githubUrl    String?
+  liveUrl      String?
+  featured     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // 關聯
+  authorId Int
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@map("projects")
+}
