@@ -7,7 +7,19 @@ export interface UserInfo {
   experience: string;
 }
 
-// 專案資訊介面
+// User related types
+export interface User {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  experience: number;
+  skills: string[];
+  email: string;
+  avatar?: string;
+}
+
+// Project related types
 export interface Project {
   id: string;
   title: string;
@@ -16,15 +28,72 @@ export interface Project {
   imageUrl?: string;
   githubUrl?: string;
   liveUrl?: string;
+  featured: boolean;
+  createdAt: Date;
 }
 
-// 部落格文章介面
+// Blog related types
 export interface BlogPost {
   id: string;
   title: string;
   content: string;
   excerpt: string;
-  publishedAt: string;
   tags: string[];
-  author: string;
+  publishedAt: Date;
+  readTime: number;
+  featured: boolean;
+}
+
+// Blog API Response types
+export interface BlogListResponse {
+  posts: BlogPost[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalPosts: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+// API Response types
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  message?: string;
+  error?: string;
+}
+
+// Request types
+export interface CreateUserRequest {
+  name: string;
+  title: string;
+  description: string;
+  experience: number;
+  skills: string[];
+  email: string;
+}
+
+export interface UpdateUserRequest extends Partial<CreateUserRequest> {
+  id: string;
+}
+
+// Blog Request types
+export interface CreateBlogPostRequest {
+  title: string;
+  content: string;
+  excerpt: string;
+  tags?: string[];
+}
+
+export interface UpdateBlogPostRequest extends Partial<CreateBlogPostRequest> {
+  id: string;
+}
+
+// Blog Query types
+export interface BlogQueryParams {
+  page?: number;
+  limit?: number;
+  tag?: string;
+  search?: string;
 } 

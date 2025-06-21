@@ -1,15 +1,15 @@
 import { useRequest } from 'ahooks';
-import { projectApi } from '@/services/api';
+import { getProjects } from '@/services/api';
 import type { Project } from '@/types';
 
 // 獲取專案列表的 hook
-export function useProjects() {
+export const useProjects = () => {
   const {
     data: projects,
     loading,
     error,
     refresh
-  } = useRequest(projectApi.getProjects, {
+  } = useRequest(getProjects, {
     cacheKey: 'projects',
     staleTime: 10 * 60 * 1000, // 10 分鐘快取
     retryCount: 2,
@@ -25,16 +25,16 @@ export function useProjects() {
     error,
     refresh
   };
-}
+};
 
-// 獲取單個專案詳情的 hook
-export function useProject(id: string) {
+// 獲取單個專案詳情的 hook (目前 API 中沒有單個專案端點，使用篩選)
+export const useProject = (id: string) => {
   const {
-    data: project,
+    data: projects,
     loading,
     error,
     refresh
-  } = useRequest(() => projectApi.getProject(id), {
+  } = useRequest(getProjects, {
     cacheKey: `project-${id}`,
     staleTime: 5 * 60 * 1000,
     retryCount: 3,
@@ -45,10 +45,13 @@ export function useProject(id: string) {
     }
   });
 
+  // 從專案列表中篩選出指定 ID 的專案
+  const project = projects?.find(p => p.id === id);
+
   return {
     project,
     loading,
     error,
     refresh
   };
-} 
+}; 

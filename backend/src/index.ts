@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import userRoutes from '@/routes/userRoutes';
+import blogRoutes from '@/routes/blogRoutes';
 import { errorHandler, notFoundHandler } from '@/middleware/errorHandler';
 
 // Load environment variables
@@ -35,6 +36,7 @@ app.get('/health', (req, res) => {
 // API Routes
 const apiPrefix = process.env.API_PREFIX || '/api/v1';
 app.use(`${apiPrefix}/users`, userRoutes);
+app.use(`${apiPrefix}/blog`, blogRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
@@ -48,6 +50,7 @@ app.listen(PORT, () => {
   console.log(`📊 Environment: ${process.env.NODE_ENV}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/health`);
   console.log(`📡 API Base URL: http://localhost:${PORT}${apiPrefix}`);
+  console.log(`📝 Blog API: http://localhost:${PORT}${apiPrefix}/blog`);
 });
 
 export default app; 

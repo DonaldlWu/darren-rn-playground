@@ -1,19 +1,25 @@
-import { Layout, Typography, Card, Row, Col, Button, Space, Avatar } from 'antd';
+import { Layout, Typography, Card, Row, Col, Button, Space, Avatar, Tag } from 'antd';
 import { 
   UserOutlined,
   RocketOutlined,
   MailOutlined,
-  HeartOutlined
+  HeartOutlined,
+  BookOutlined,
+  ClockCircleOutlined
 } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useUser } from '@/hooks';
+import { useFeaturedBlogPosts } from '@/hooks/useBlog';
 
 const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
 
 const Home = () => {
+  const navigate = useNavigate();
   const { userInfo, loading, error } = useUser();
+  const { data: featuredPosts } = useFeaturedBlogPosts();
 
   // 如果發生錯誤，顯示錯誤訊息
   if (error) {
@@ -32,6 +38,14 @@ const Home = () => {
       </Layout>
     );
   }
+
+  const formatDate = (date: Date) => {
+    return new Date(date).toLocaleDateString('zh-TW', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
   return (
     <Layout className="layout" style={{ minHeight: '100vh' }}>
@@ -63,6 +77,9 @@ const Home = () => {
             <Button type="primary" size="large" icon={<RocketOutlined />}>
               View Projects
             </Button>
+            <Button size="large" icon={<BookOutlined />} onClick={() => navigate('/blog')}>
+              閱讀部落格
+            </Button>
             <Button size="large" icon={<MailOutlined />}>
               Contact Me
             </Button>
@@ -74,7 +91,7 @@ const Home = () => {
           <Col xs={24} md={12}>
             <Card title="技術技能" bordered={false} style={{ height: '100%' }}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {userInfo?.skills.map((skill, index) => (
+                {userInfo?.skills?.map((skill: string, index: number) => (
                   <Button key={index} type="default" size="small">
                     {skill}
                   </Button>
@@ -91,6 +108,78 @@ const Home = () => {
             </Card>
           </Col>
         </Row>
+
+        {/* Featured Blog Posts Section */}
+        {featuredPosts && featuredPosts.length > 0 && (
+          <Card title="精選文章" bordered={false} style={{ marginBottom: '50px' }}>
+            <Row gutter={[24, 24]}>
+              {featuredPosts.slice(0, 3).map(post => (
+                <Col xs={24} md={8} key={post.id}>
+                  <Card
+                    hoverable
+                    style={{ height: '100%' }}
+                    cover={
+                      <div style={{ 
+                        height: '150px', 
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
+                        <BookOutlined style={{ fontSize: '32px', color: 'white' }} />
+                      </div>
+                    }
+                    actions={[
+                      <Button type="link" key="read" onClick={() => navigate(`/blog/${post.id}`)}>
+                        閱讀全文
+                      </Button>
+                    ]}
+                  >
+                    <Card.Meta
+                      title={
+                        <Title level={5} style={{ marginBottom: '8px' }}>
+                          {post.title}
+                        </Title>
+                      }
+                      description={
+                        <div>
+                          <Paragraph 
+                            ellipsis={{ rows: 2 }} 
+                            style={{ marginBottom: '12px', color: '#666' }}
+                          >
+                            {post.excerpt}
+                          </Paragraph>
+                          
+                          <Space wrap style={{ marginBottom: '8px' }}>
+                            {post.tags.slice(0, 2).map(tag => (
+                              <Tag key={tag} color="blue">
+                                {tag}
+                              </Tag>
+                            ))}
+                          </Space>
+                          
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Text type="secondary" style={{ fontSize: '12px' }}>
+                              <ClockCircleOutlined /> {post.readTime} 分鐘
+                            </Text>
+                            <Text type="secondary" style={{ fontSize: '12px' }}>
+                              {formatDate(post.publishedAt)}
+                            </Text>
+                          </div>
+                        </div>
+                      }
+                    />
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+            <div style={{ textAlign: 'center', marginTop: '24px' }}>
+              <Button type="primary" size="large" onClick={() => navigate('/blog')}>
+                查看更多文章
+              </Button>
+            </div>
+          </Card>
+        )}
 
         {/* About Section */}
         <Card title="關於我" bordered={false} style={{ marginBottom: '50px' }}>

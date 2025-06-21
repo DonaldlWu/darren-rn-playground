@@ -1,10 +1,41 @@
-import type { UserInfo, Project, BlogPost } from '@/types';
+import type { User, Project, BlogPost, BlogListResponse, BlogQueryParams, CreateBlogPostRequest, UpdateBlogPostRequest } from '@/types';
 
 // 模擬API基礎URL
-const API_BASE_URL = 'https://api.example.com';
+const API_BASE_URL = 'http://localhost:3001/api/v1';
 
-// 模擬網路延遲
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+// 後端回應格式
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message: string;
+}
+
+// 通用 API 請求函數
+const apiRequest = async <T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> => {
+  const url = `${API_BASE_URL}${endpoint}`;
+  const response = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+    ...options,
+  });
+
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.statusText}`);
+  }
+
+  const result: ApiResponse<T> = await response.json();
+  
+  if (!result.success) {
+    throw new Error(result.message || 'API request failed');
+  }
+  
+  return result.data;
+};
 
 // 通用錯誤處理
 class ApiError extends Error {
@@ -16,7 +47,7 @@ class ApiError extends Error {
 
 // 模擬API響應包裝器
 const mockApiResponse = async <T>(data: T, delayMs: number = 1000): Promise<T> => {
-  await delay(delayMs);
+  await new Promise(resolve => setTimeout(resolve, delayMs));
   
   // 模擬隨機錯誤 (10% 機率)
   if (Math.random() < 0.1) {
@@ -27,115 +58,101 @@ const mockApiResponse = async <T>(data: T, delayMs: number = 1000): Promise<T> =
 };
 
 // 使用者相關API
-export const userApi = {
-  // 獲取使用者資訊
-  getUserInfo: async (): Promise<UserInfo> => {
-    const mockData: UserInfo = {
-      name: 'Darren',
-      title: 'Full Stack Developer',
-      description: '熱愛程式開發，專注於React、TypeScript和現代化Web技術',
-      skills: ['React', 'TypeScript', 'Node.js', 'Rails', 'Docker'],
-      experience: '5+ years'
-    };
-    
-    return mockApiResponse(mockData);
-  },
+export const getUserInfo = async (id: string): Promise<User> => {
+  // 模擬 API 延遲
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  // Mock data
+  return {
+    id: '1',
+    name: 'Darren Wu',
+    title: 'Full Stack Developer',
+    description: 'Passionate full-stack developer with expertise in modern web technologies. From Rails to React, I love creating high-quality web applications and continuously learning new technologies.',
+    experience: 5,
+    skills: ['React', 'TypeScript', 'Node.js', 'Express', 'Ruby on Rails', 'PostgreSQL', 'MongoDB', 'Docker', 'AWS'],
+    email: 'darren@example.com',
+    avatar: 'https://via.placeholder.com/150'
+  };
+};
 
-  // 更新使用者資訊
-  updateUserInfo: async (userInfo: Partial<UserInfo>): Promise<UserInfo> => {
-    const mockData: UserInfo = {
-      name: 'Darren',
-      title: 'Full Stack Developer',
-      description: '熱愛程式開發，專注於React、TypeScript和現代化Web技術',
-      skills: ['React', 'TypeScript', 'Node.js', 'Rails', 'Docker'],
-      experience: '5+ years',
-      ...userInfo
-    };
-    
-    return mockApiResponse(mockData, 800);
-  }
+export const updateUserInfo = async (id: string, data: Partial<User>): Promise<User> => {
+  return apiRequest<User>(`/users/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
 };
 
 // 專案相關API
-export const projectApi = {
-  // 獲取專案列表
-  getProjects: async (): Promise<Project[]> => {
-    const mockData: Project[] = [
-      {
-        id: '1',
-        title: '個人網站',
-        description: '使用React + TypeScript建立的現代化個人網站',
-        technologies: ['React', 'TypeScript', 'Ant Design', 'Vite'],
-        githubUrl: 'https://github.com/darren/personal-website',
-        liveUrl: 'https://darren.dev'
-      },
-      {
-        id: '2',
-        title: '電商平台',
-        description: '基於Rails的全功能電商平台',
-        technologies: ['Ruby on Rails', 'PostgreSQL', 'Redis', 'Docker'],
-        githubUrl: 'https://github.com/darren/ecommerce'
-      }
-    ];
-    
-    return mockApiResponse(mockData);
-  },
-
-  // 獲取單個專案詳情
-  getProject: async (id: string): Promise<Project> => {
-    const mockData: Project = {
-      id,
-      title: '個人網站',
-      description: '使用React + TypeScript建立的現代化個人網站',
+export const getProjects = async (): Promise<Project[]> => {
+  // Mock data
+  return [
+    {
+      id: '1',
+      title: '個人作品集網站',
+      description: '使用 React + TypeScript + Ant Design 建立的現代化個人作品集網站',
       technologies: ['React', 'TypeScript', 'Ant Design', 'Vite'],
-      githubUrl: 'https://github.com/darren/personal-website',
-      liveUrl: 'https://darren.dev'
-    };
-    
-    return mockApiResponse(mockData, 500);
-  }
+      imageUrl: 'https://via.placeholder.com/300x200',
+      githubUrl: 'https://github.com/darren/portfolio',
+      liveUrl: 'https://darren-portfolio.com',
+      featured: true,
+      createdAt: new Date('2024-01-01')
+    },
+    {
+      id: '2',
+      title: '電商平台',
+      description: '全端電商平台，包含用戶管理、商品管理、訂單處理等功能',
+      technologies: ['React', 'Node.js', 'Express', 'MongoDB'],
+      imageUrl: 'https://via.placeholder.com/300x200',
+      githubUrl: 'https://github.com/darren/ecommerce',
+      liveUrl: 'https://ecommerce-demo.com',
+      featured: true,
+      createdAt: new Date('2023-12-01')
+    }
+  ];
 };
 
 // 部落格相關API
-export const blogApi = {
-  // 獲取部落格文章列表
-  getBlogPosts: async (): Promise<BlogPost[]> => {
-    const mockData: BlogPost[] = [
-      {
-        id: '1',
-        title: 'React 18 新功能介紹',
-        content: 'React 18 帶來了許多令人興奮的新功能...',
-        excerpt: 'React 18 帶來了許多令人興奮的新功能，包括自動批處理、Suspense 改進等。',
-        publishedAt: '2024-01-15',
-        tags: ['React', 'JavaScript', '前端'],
-        author: 'Darren'
-      },
-      {
-        id: '2',
-        title: 'TypeScript 最佳實踐',
-        content: 'TypeScript 是一個強大的類型系統...',
-        excerpt: 'TypeScript 是一個強大的類型系統，本文將分享一些最佳實踐。',
-        publishedAt: '2024-01-10',
-        tags: ['TypeScript', 'JavaScript', '開發'],
-        author: 'Darren'
-      }
-    ];
-    
-    return mockApiResponse(mockData);
-  },
+export const getBlogPosts = async (params?: BlogQueryParams): Promise<BlogListResponse> => {
+  const queryParams = new URLSearchParams();
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+  if (params?.tag) queryParams.append('tag', params.tag);
+  if (params?.search) queryParams.append('search', params.search);
 
-  // 獲取單個部落格文章
-  getBlogPost: async (id: string): Promise<BlogPost> => {
-    const mockData: BlogPost = {
-      id,
-      title: 'React 18 新功能介紹',
-      content: 'React 18 帶來了許多令人興奮的新功能，包括自動批處理、Suspense 改進、新的 Hooks 等。這些功能將大大改善開發體驗和應用性能。',
-      excerpt: 'React 18 帶來了許多令人興奮的新功能，包括自動批處理、Suspense 改進等。',
-      publishedAt: '2024-01-15',
-      tags: ['React', 'JavaScript', '前端'],
-      author: 'Darren'
-    };
-    
-    return mockApiResponse(mockData, 500);
-  }
+  const queryString = queryParams.toString();
+  const endpoint = `/blog${queryString ? `?${queryString}` : ''}`;
+  
+  return apiRequest<BlogListResponse>(endpoint);
+};
+
+export const getBlogPost = async (id: string): Promise<BlogPost> => {
+  return apiRequest<BlogPost>(`/blog/${id}`);
+};
+
+export const getFeaturedBlogPosts = async (): Promise<BlogPost[]> => {
+  return apiRequest<BlogPost[]>('/blog/featured');
+};
+
+export const getBlogTags = async (): Promise<string[]> => {
+  return apiRequest<string[]>('/blog/tags');
+};
+
+export const createBlogPost = async (data: CreateBlogPostRequest): Promise<BlogPost> => {
+  return apiRequest<BlogPost>('/blog', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+};
+
+export const updateBlogPost = async (id: string, data: Partial<CreateBlogPostRequest>): Promise<BlogPost> => {
+  return apiRequest<BlogPost>(`/blog/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+};
+
+export const deleteBlogPost = async (id: string): Promise<void> => {
+  return apiRequest<void>(`/blog/${id}`, {
+    method: 'DELETE',
+  });
 }; 
