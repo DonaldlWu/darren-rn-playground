@@ -37,26 +37,6 @@ const apiRequest = async <T>(
   return result.data;
 };
 
-// 通用錯誤處理
-class ApiError extends Error {
-  constructor(public status: number, message: string) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
-
-// 模擬API響應包裝器
-const mockApiResponse = async <T>(data: T, delayMs: number = 1000): Promise<T> => {
-  await new Promise(resolve => setTimeout(resolve, delayMs));
-  
-  // 模擬隨機錯誤 (10% 機率)
-  if (Math.random() < 0.1) {
-    throw new ApiError(500, 'Internal Server Error');
-  }
-  
-  return data;
-};
-
 // 使用者相關API
 export const getUserInfo = async (id: string): Promise<User> => {
   return apiRequest<User>(`/users/${id}`);

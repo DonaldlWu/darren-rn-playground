@@ -151,9 +151,10 @@ API_PREFIX=/api/v1
 ```
 
 ### 新增文章
-目前使用 Mock 資料，可以：
-1. 修改 `backend/src/controllers/blogController.ts` 中的 `mockBlogPosts`
-2. 或整合真實資料庫（PostgreSQL/MongoDB）
+現在使用真實資料庫（PostgreSQL + Prisma），可以：
+1. 通過 Markdown 檔案上傳 API 創建文章
+2. 使用 `curl` 命令上傳 `.md` 檔案
+3. 或直接使用資料庫管理工具
 
 ## 🎨 UI 特色
 

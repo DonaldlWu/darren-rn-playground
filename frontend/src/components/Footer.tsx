@@ -16,13 +16,13 @@ const Footer = () => {
       color: 'white'
     }}>
       <Space size="large">
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" style={{ color: 'white' }}>
+        <a href="https://github.com/DonaldlWu" target="_blank" rel="noopener noreferrer" style={{ color: 'white' }}>
           <GithubOutlined style={{ fontSize: '24px' }} />
         </a>
-        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={{ color: 'white' }}>
+        <a href="https://www.linkedin.com/in/%E5%BE%97%E4%BA%BA-%E5%90%B3-43171a11b/" target="_blank" rel="noopener noreferrer" style={{ color: 'white' }}>
           <LinkedinOutlined style={{ fontSize: '24px' }} />
         </a>
-        <a href="mailto:darren@example.com" style={{ color: 'white' }}>
+        <a href="mailto:deirenwu1101@gmail.com" style={{ color: 'white' }}>
           <MailOutlined style={{ fontSize: '24px' }} />
         </a>
       </Space>

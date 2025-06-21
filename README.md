@@ -497,9 +497,9 @@ docker exec -i darren_portfolio_db psql -U darren darren_portfolio < backup.sql
 
 ## 聯絡資訊
 
-- GitHub: [你的 GitHub]
-- LinkedIn: [你的 LinkedIn]
-- Email: darren@example.com
+- GitHub: [DonaldlWu](https://github.com/DonaldlWu)
+- LinkedIn: [吳得人](https://www.linkedin.com/in/%E5%BE%97%E4%BA%BA-%E5%90%B3-43171a11b/)
+- Email: deirenwu1101@gmail.com
 
 ---
 

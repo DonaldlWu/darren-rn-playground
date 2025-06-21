@@ -22,9 +22,16 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
         title: true,
         description: true,
         experience: true,
+        workFrom: true,
         skills: true,
         email: true,
         avatar: true,
+        backgroundImage: true,
+        aboutMe: true,
+        githubUrl: true,
+        linkedinUrl: true,
+        websiteUrl: true,
+        location: true,
         createdAt: true,
         updatedAt: true
       }
@@ -62,9 +69,16 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
         title: true,
         description: true,
         experience: true,
+        workFrom: true,
         skills: true,
         email: true,
         avatar: true,
+        backgroundImage: true,
+        aboutMe: true,
+        githubUrl: true,
+        linkedinUrl: true,
+        websiteUrl: true,
+        location: true,
         createdAt: true,
         updatedAt: true
       }

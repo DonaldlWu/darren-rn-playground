@@ -17,16 +17,23 @@ async function main() {
 
   // 創建使用者
   const user = await prisma.user.upsert({
-    where: { email: 'darren@example.com' },
+    where: { email: 'deirenwu1101@gmail.com' },
     update: {},
     create: {
       name: 'Darren Wu',
-      title: 'Full Stack Developer',
-      description: 'Passionate full-stack developer with expertise in modern web technologies. From Rails to React, I love creating high-quality web applications and continuously learning new technologies.',
-      experience: 5,
-      skills: ['React', 'TypeScript', 'Node.js', 'Express', 'Ruby on Rails', 'PostgreSQL', 'MongoDB', 'Docker', 'AWS'],
-      email: 'darren@example.com',
-      avatar: 'https://via.placeholder.com/150'
+      title: 'Senior iOS Developer',
+      description: '走偏的 iOS 工程師',
+      experience: 7,
+      workFrom: 2017,
+      skills: ['swift', 'iOS', 'Xcode', 'React Native'],
+      email: 'deirenwu1101@gmail.com',
+      avatar: 'https://cvws.icloud-content.com/S/ATbXRrHpcNA81VyB22KqMDxnZ-Pa/IMG_8746.JPG?o=AmF_9_UWd-l5wVja4Ow2bzOVUwCjKxxsZPwYJRdONyt8&v=1&z=https%3A%2F%2Fp161-content.icloud.com%3A443&x=1&a=CAogqltW3YcXYnOIG6KZFQ-v0NdlMJZqxUmfWGjPq-ctIVsSZxCIuveY-TIYiNGKnvkyIgEAUgRnZ-PaaiYXy1QAdIVGCImDJ1WWovRRNhihF99Xbc5Ni_liWpKejcmG5kUVQ3Imq9Qa3u02ZKEyouWEu1TUw7Ky2e6FgYBVNpzsSx0sS2p7TzU4Nw0&e=1750530697&r=a8196434-6ffe-4adc-8c21-5d3603896929-2&s=j_lDjNNoZuQY5yurphgfLGx1D_Y',
+      backgroundImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80',
+      aboutMe: '從 iOS 開始探索軟體開發世界，慢慢接觸不同的開發技術。',
+      githubUrl: 'https://github.com/DonaldlWu',
+      linkedinUrl: 'https://www.linkedin.com/in/%E5%BE%97%E4%BA%BA-%E5%90%B3-43171a11b/',
+      websiteUrl: 'https://pose-coach.com/about',
+      location: 'Taipei, Taiwan'
     },
   });
 
@@ -42,7 +49,7 @@ async function main() {
         title: '個人作品集網站',
         description: '使用 React + TypeScript + Ant Design 建立的現代化個人作品集網站',
         technologies: ['React', 'TypeScript', 'Ant Design', 'Vite'],
-        imageUrl: 'https://via.placeholder.com/300x200',
+        imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
         githubUrl: 'https://github.com/darren/portfolio',
         liveUrl: 'https://darren-portfolio.com',
         featured: true,
@@ -57,7 +64,7 @@ async function main() {
         title: '電商平台',
         description: '全端電商平台，包含用戶管理、商品管理、訂單處理等功能',
         technologies: ['React', 'Node.js', 'Express', 'MongoDB'],
-        imageUrl: 'https://via.placeholder.com/300x200',
+        imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
         githubUrl: 'https://github.com/darren/ecommerce',
         liveUrl: 'https://ecommerce-demo.com',
         featured: true,
@@ -68,178 +75,9 @@ async function main() {
 
   console.log('專案已創建:', projects.length, '個');
 
-  // 創建部落格文章
-  const blogPosts = await Promise.all([
-    prisma.blogPost.upsert({
-      where: { id: 'post-1' },
-      update: {},
-      create: {
-        id: 'post-1',
-        title: '從 Rails 到 React：我的技術轉型之路',
-        content: `# 從 Rails 到 React：我的技術轉型之路
-
-## 引言
-
-在過去的幾年裡，我經歷了從 Ruby on Rails 到 React 的技術轉型。這篇文章將分享我的學習歷程、遇到的挑戰以及獲得的收穫。
-
-## 為什麼要轉型？
-
-### Rails 的優勢
-- 快速開發
-- 約定優於配置
-- 豐富的生態系統
-
-### React 的吸引力
-- 組件化開發
-- 更好的用戶體驗
-- 更靈活的架構
-
-## 學習歷程
-
-### 第一階段：基礎學習
-1. JavaScript 基礎
-2. ES6+ 語法
-3. React 核心概念
-
-### 第二階段：進階應用
-1. TypeScript 整合
-2. 狀態管理
-3. 路由配置
-
-## 遇到的挑戰
-
-### 1. 思維轉換
-從服務端渲染到客戶端渲染需要思維上的轉換。
-
-### 2. 工具鏈複雜性
-現代前端工具鏈比 Rails 更複雜。
-
-### 3. 性能優化
-需要考慮打包大小、懶加載等問題。
-
-## 收穫與成長
-
-### 技術能力提升
-- 更深入理解前端技術
-- 掌握現代開發工具
-- 提升程式碼品質
-
-### 職業發展
-- 拓寬技術棧
-- 增加就業機會
-- 提升競爭力
-
-## 結語
-
-技術轉型是一個持續的過程，重要的是保持學習的熱情和開放的態度。`,
-        excerpt: '分享我從 Ruby on Rails 轉向 React 開發的學習歷程和心得體會。',
-        tags: ['React', 'Rails', '技術轉型', '全端開發'],
-        readTime: 8,
-        featured: true,
-        authorId: user.id,
-        slug: generateSlug('從 Rails 到 React：我的技術轉型之路')
-      },
-    }),
-    prisma.blogPost.upsert({
-      where: { id: 'post-2' },
-      update: {},
-      create: {
-        id: 'post-2',
-        title: 'TypeScript 在 React 專案中的最佳實踐',
-        content: `# TypeScript 在 React 專案中的最佳實踐
-
-## 為什麼選擇 TypeScript？
-
-TypeScript 為 JavaScript 添加了靜態類型檢查，能夠在開發階段就發現潛在的錯誤。
-
-## 基本配置
-
-### 安裝依賴
-\`\`\`bash
-npm install typescript @types/react @types/react-dom
-\`\`\`
-
-### tsconfig.json 配置
-\`\`\`json
-{
-  "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["DOM", "DOM.Iterable", "ES6"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
-  },
-  "include": ["src"]
-}
-\`\`\`
-
-## 組件類型定義
-
-### 函數組件
-\`\`\`typescript
-interface ButtonProps {
-  text: string;
-  onClick: () => void;
-  variant?: 'primary' | 'secondary';
-  disabled?: boolean;
-}
-
-const Button: React.FC<ButtonProps> = ({ 
-  text, 
-  onClick, 
-  variant = 'primary', 
-  disabled = false 
-}) => {
-  return (
-    <button 
-      onClick={onClick}
-      className={\`btn btn-\${variant}\`}
-      disabled={disabled}
-    >
-      {text}
-    </button>
-  );
-};
-\`\`\`
-
-## 狀態管理
-
-### useState 類型推斷
-\`\`\`typescript
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
-const [user, setUser] = useState<User | null>(null);
-const [loading, setLoading] = useState<boolean>(false);
-\`\`\`
-
-## 結語
-
-TypeScript 能夠大幅提升開發體驗和程式碼品質，值得在專案中採用。`,
-        excerpt: '詳細介紹在 React 專案中使用 TypeScript 的最佳實踐和配置方法。',
-        tags: ['TypeScript', 'React', '最佳實踐', '前端開發'],
-        readTime: 6,
-        featured: false,
-        authorId: user.id,
-        slug: generateSlug('TypeScript 在 React 專案中的最佳實踐')
-      },
-    }),
-  ]);
-
-  console.log('部落格文章已創建:', blogPosts.length, '篇');
+  // 注意：部落格文章現在通過 Markdown 檔案上傳功能來創建
+  // 這裡不再創建預設的部落格文章，因為實際的文章會通過 API 上傳
+  console.log('部落格文章將通過 Markdown 檔案上傳功能創建');
 
   console.log('資料庫初始化完成！');
 }

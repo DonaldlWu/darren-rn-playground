@@ -14,9 +14,18 @@ export interface User {
   title: string;
   description: string;
   experience: number;
+  workFrom?: number;
   skills: string[];
   email: string;
   avatar?: string;
+  backgroundImage?: string;
+  aboutMe?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
+  websiteUrl?: string;
+  location?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // Project related types

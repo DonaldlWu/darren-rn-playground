@@ -20,9 +20,16 @@ model User {
   title       String
   description String
   experience  Int
+  workFrom    Int?     // 開始工作年份
   skills      String[] // PostgreSQL array
   email       String   @unique
   avatar      String?
+  backgroundImage String? // 背景圖
+  aboutMe    String?   @db.Text // 關於我文字
+  githubUrl  String?   // GitHub 連結
+  linkedinUrl String?  // LinkedIn 連結
+  websiteUrl String?   // 個人網站連結
+  location   String?   // 所在地
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
