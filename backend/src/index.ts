@@ -3,10 +3,10 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import userRoutes from '@/routes/userRoutes';
-import blogRoutes from '@/routes/blogRoutes';
-import projectRoutes from '@/routes/projectRoutes';
-import { errorHandler, notFoundHandler } from '@/middleware/errorHandler';
+import userRoutes from './routes/userRoutes';
+import blogRoutes from './routes/blogRoutes';
+import projectRoutes from './routes/projectRoutes';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
 // Load environment variables
 dotenv.config();

@@ -1,7 +1,7 @@
 import type { User, Project, BlogPost, BlogListResponse, BlogQueryParams, CreateBlogPostRequest, UpdateBlogPostRequest } from '@/types';
 
-// API基礎URL
-const API_BASE_URL = 'http://localhost:3001/api/v1';
+// API基礎URL - 使用環境變數
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api/v1';
 
 // 後端回應格式
 interface ApiResponse<T> {

@@ -9,9 +9,9 @@ import {
   getTags,
   uploadBlogPost,
   getBlogPostBySlug
-} from '@/controllers/blogController';
-import { requireApiKey } from '@/middleware/auth';
-import upload from '@/middleware/upload';
+} from '../controllers/blogController';
+import { requireApiKey } from '../middleware/auth';
+import upload from '../middleware/upload';
 
 const router = Router();
 

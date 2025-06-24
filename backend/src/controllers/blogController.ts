@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { UploadRequest } from '@/types';
-import { sendSuccess, sendNotFound, sendBadRequest } from '@/utils/response';
-import { generateSlug } from '@/utils/slug';
-import { parseMarkdownFile, calculateReadTime, extractExcerpt } from '@/utils/markdown';
+import { UploadRequest } from '../types';
+import { sendSuccess, sendNotFound, sendBadRequest } from '../utils/response';
+import { generateSlug } from '../utils/slug';
+import { parseMarkdownFile, calculateReadTime, extractExcerpt } from '../utils/markdown';
 
 const prisma = new PrismaClient();
 

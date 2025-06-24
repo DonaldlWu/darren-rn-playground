@@ -25,12 +25,15 @@ COPY . .
 # 編譯 TypeScript
 RUN npm run build
 
+# 再次生成 Prisma client（確保在編譯後）
+RUN npx prisma generate
+
 # 暴露端口
 EXPOSE 3001
 
 # 健康檢查
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3001/api/v1/health || exit 1
+  CMD curl -f http://localhost:3001/health || exit 1
 
 # 啟動應用
 CMD ["npm", "start"] 
